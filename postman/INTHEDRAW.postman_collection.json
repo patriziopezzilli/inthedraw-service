@@ -1,0 +1,144 @@
+{
+	"info": {
+		"_postman_id": "5ef47e77-3af7-4c3a-8d50-ff09b5057532",
+		"name": "INTHEDRAW",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "RETRIEVE RAFFLE",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/in-the-draw/customer/raffle",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"in-the-draw",
+						"customer",
+						"raffle"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CREATE RAFFLE",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\":\"Jordan 1 low x Travis Scott\",\r\n    \"info\":\"Draw at 9:00\",\r\n    \"entries\":0,\r\n    \"entriesMax\":200,\r\n    \"tokenRequired\": 4,\r\n    \"drawDate\":\"Apr 25, 2023\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/in-the-draw/customer/raffle",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"in-the-draw",
+						"customer",
+						"raffle"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER REGISTER",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Franco\",\r\n    \"surname\":\"Rossi\",\r\n    \"email\":\"franco@rossi.com\",\r\n    \"password\":\"franco\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/in-the-draw/customer/user/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"in-the-draw",
+						"customer",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RETRIEVE USER",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/in-the-draw/customer/user/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"in-the-draw",
+						"customer",
+						"user",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "USER LOGIN",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"franco@rossi.com\",\r\n    \"password\":\"franco\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/in-the-draw/customer/user/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"in-the-draw",
+						"customer",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
