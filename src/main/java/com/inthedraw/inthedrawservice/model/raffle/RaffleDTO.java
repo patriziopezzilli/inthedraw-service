@@ -13,6 +13,7 @@ public class RaffleDTO implements Serializable {
     private int id;
     private String title;
     private String info;
+    private String photo;
     private Integer entries;
     private Integer entriesMax;
     private Integer tokenRequired;
