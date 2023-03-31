@@ -1,8 +1,8 @@
 package com.inthedraw.inthedrawservice.entity.raffle;
 
-import jakarta.persistence.*;
 import lombok.*;
 
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity

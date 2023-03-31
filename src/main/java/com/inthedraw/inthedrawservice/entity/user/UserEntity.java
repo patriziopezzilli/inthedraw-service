@@ -1,7 +1,8 @@
 package com.inthedraw.inthedrawservice.entity.user;
 
-import jakarta.persistence.*;
 import lombok.*;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "USER_PROFILE")
