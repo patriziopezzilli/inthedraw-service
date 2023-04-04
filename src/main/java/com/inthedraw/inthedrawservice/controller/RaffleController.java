@@ -18,7 +18,7 @@ public class RaffleController {
     private RaffleService raffleService;
 
     @RequestMapping(value = "in-the-draw/customer/raffle", method = RequestMethod.GET)
-    public RetrieveRaffleResponse retrieveRaffle(@RequestParam Long userId) {
+    public RetrieveRaffleResponse retrieveRaffle(@RequestParam(required = false) Long userId) {
         logger.info("> retrieve raffle");
         return raffleService.retrieveRaffles(userId);
     }
