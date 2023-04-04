@@ -26,6 +26,12 @@ public class DomainConstants {
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
         Date dateToCheck = dateFormat.parse(date);
         logger.info("> validate date " + dateToCheck.toString());
+        return dateFormat.format(dateToCheck);
+    }
+
+    public static String getSimpleTodayDate() throws ParseException {
+        Locale locale = new Locale("en", "US");
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
         return dateFormat.format(new Date());
     }
 }

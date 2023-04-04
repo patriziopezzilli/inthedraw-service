@@ -1,9 +1,11 @@
 package com.inthedraw.inthedrawservice.service;
 
 import com.inthedraw.inthedrawservice.entity.user.UserEntity;
+import com.inthedraw.inthedrawservice.entity.wallet.WalletEntity;
 import com.inthedraw.inthedrawservice.mapper.UserMapper;
 import com.inthedraw.inthedrawservice.model.user.*;
 import com.inthedraw.inthedrawservice.repository.user.UserRepository;
+import com.inthedraw.inthedrawservice.repository.wallet.WalletRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,12 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private WalletRepository walletRepository;
+
     public LoginResponse updateUser(Integer id, UpdateUserRequest request) {
         LoginResponse response = new LoginResponse();
-        Optional<UserEntity> userToUpdate = repository.findById(id);
+        Optional<UserEntity> userToUpdate = repository.findById(Long.parseLong(id.toString()));
         if (userToUpdate.isPresent()) {
             if (null != request.getName()) {
                 userToUpdate.get().setName(request.getName());
@@ -57,7 +62,7 @@ public class UserService {
             }
 
             repository.save(userToUpdate.get());
-            Optional<UserEntity> userUpdated = repository.findById(id);
+            Optional<UserEntity> userUpdated = repository.findById(Long.parseLong(id.toString()));
             userUpdated.ifPresent(userEntity -> response.setUserLogged(mapper.toDTO(userEntity)));
         }
         return response;
@@ -75,6 +80,11 @@ public class UserService {
         newUser.setStatus(USER_STATUS_ACTIVE);
         newUser = repository.save(newUser);
         logger.info("> user " + newUser.getId() + " created");
+
+        WalletEntity newWallet = new WalletEntity();
+        newWallet.setUserId(newUser.getId());
+        newWallet.setBalance(0);
+        walletRepository.save(newWallet);
 
         LoginResponse response = new LoginResponse();
         response.setUserLogged(mapper.toDTO(newUser));
@@ -94,7 +104,7 @@ public class UserService {
     public UserDTO retrieveUser(Integer id) {
         logger.info("> retrieve user " + id.toString());
         UserDTO response = null;
-        Optional<UserEntity> entity = repository.findById(id);
+        Optional<UserEntity> entity = repository.findById(Long.parseLong(id.toString()));
         if (entity.isPresent()) {
             response = mapper.toDTO(entity.get());
         }

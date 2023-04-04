@@ -17,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "in-the-draw/customer/user/{id}", method = RequestMethod.GET)
-    public UserDTO retrieveRaffle(@PathVariable Integer id) {
+    public UserDTO retrieveUser(@PathVariable Integer id) {
         logger.info("> retrieve user " + id.toString());
         return userService.retrieveUser(id);
     }

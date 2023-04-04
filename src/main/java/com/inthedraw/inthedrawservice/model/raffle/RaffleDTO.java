@@ -10,7 +10,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class RaffleDTO implements Serializable {
 
-    private int id;
+    private Long id;
     private String title;
     private String info;
     private String photo;
@@ -23,5 +23,6 @@ public class RaffleDTO implements Serializable {
     private Integer orderId;
     private String status;
     private String date;
+    private Boolean participate;
 
 }
