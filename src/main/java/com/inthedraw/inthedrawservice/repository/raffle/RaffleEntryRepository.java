@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RaffleEntryRepository extends JpaRepository<EntryEntity, Long> {
 
     boolean existsByRaffleIdAndUserId(Long raffleId, Long userId);
+
+    EntryEntity findByRaffleIdAndUserId(Long raffleId, Long userId);
 }

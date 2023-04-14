@@ -23,6 +23,12 @@ public class RaffleController {
         return raffleService.retrieveRaffles(userId);
     }
 
+    @RequestMapping(value = "in-the-draw/customer/raffle/entries", method = RequestMethod.GET)
+    public RetrieveRaffleResponse retrieveRaffleEntries(@RequestParam(required = false) Long userId) {
+        logger.info("> retrieve raffle entries");
+        return raffleService.retrieveRaffleEntries(userId);
+    }
+
     @RequestMapping(value = "in-the-draw/customer/raffle", method = RequestMethod.POST)
     public void createRaffle(@RequestBody CreateRaffleRequest request) throws ParseException {
         logger.info("> create raffle");
@@ -33,5 +39,11 @@ public class RaffleController {
     public RetrieveRaffleResponse join(@PathVariable Long id, @RequestParam Long userId) throws ParseException {
         logger.info("> join raffle");
         return raffleService.joinRaffle(id, userId);
+    }
+
+    @RequestMapping(value = "in-the-draw/customer/raffle/{id}/cancel", method = RequestMethod.PUT)
+    public RetrieveRaffleResponse cancel(@PathVariable Long id, @RequestParam Long userId) throws ParseException {
+        logger.info("> cancel raffle");
+        return raffleService.cancelRaffle(id, userId);
     }
 }

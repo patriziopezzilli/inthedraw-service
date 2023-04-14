@@ -3,18 +3,21 @@ package com.inthedraw.inthedrawservice.service;
 import com.inthedraw.inthedrawservice.controller.RaffleController;
 import com.inthedraw.inthedrawservice.entity.raffle.EntryEntity;
 import com.inthedraw.inthedrawservice.entity.raffle.RaffleEntity;
+import com.inthedraw.inthedrawservice.entity.wallet.WalletEntity;
 import com.inthedraw.inthedrawservice.mapper.RaffleMapper;
 import com.inthedraw.inthedrawservice.model.raffle.CreateRaffleRequest;
 import com.inthedraw.inthedrawservice.model.raffle.RaffleDTO;
 import com.inthedraw.inthedrawservice.model.raffle.RetrieveRaffleResponse;
 import com.inthedraw.inthedrawservice.repository.raffle.RaffleEntryRepository;
 import com.inthedraw.inthedrawservice.repository.raffle.RaffleRepository;
+import com.inthedraw.inthedrawservice.repository.wallet.WalletRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +39,9 @@ public class RaffleService {
     @Autowired
     private RaffleMapper mapper;
 
+    @Autowired
+    private WalletRepository walletRepository;
+
     public RetrieveRaffleResponse retrieveRaffles(Long userId) {
         RetrieveRaffleResponse response = new RetrieveRaffleResponse();
         List<RaffleEntity> raffleEntities = repository.findByStatus(RAFFLE_STATUS_OPEN);
@@ -56,6 +62,22 @@ public class RaffleService {
         return response;
     }
 
+    public RetrieveRaffleResponse retrieveRaffleEntries(Long userId) {
+        RetrieveRaffleResponse response = new RetrieveRaffleResponse();
+        List<RaffleEntity> raffleEntities = repository.findAll();
+        response.setRaffles(new ArrayList<>());
+
+        for (RaffleEntity r : raffleEntities) {
+            if (null != userId && entryRepository.existsByRaffleIdAndUserId(r.getId(), userId)) {
+                RaffleDTO tempDTO = mapper.toDTO(r);
+                tempDTO.setParticipate(true);
+                response.getRaffles().add(tempDTO);
+            }
+        }
+
+        return response;
+    }
+
     public void createRaffle(CreateRaffleRequest request) throws ParseException {
         RaffleEntity entity = new RaffleEntity();
         entity.setTitle(request.getTitle());
@@ -69,6 +91,33 @@ public class RaffleService {
         entity.setDate(getTodayDate(request.getDrawDate()));
         entity = repository.save(entity);
         logger.info("> raffle " + entity.getId().toString() + " created successfully");
+    }
+
+    public RetrieveRaffleResponse cancelRaffle(Long raffleId, Long userId) throws ParseException {
+        RetrieveRaffleResponse response = new RetrieveRaffleResponse();
+
+        Optional<RaffleEntity> raffleEntity = repository.findById(raffleId);
+        EntryEntity entryEntity = entryRepository.findByRaffleIdAndUserId(raffleId, userId);
+
+        if (raffleEntity.isPresent() && null != entryEntity) {
+            // cancel entry
+            entryRepository.delete(entryEntity);
+
+            // update raffle
+            raffleEntity.get().setEntries(raffleEntity.get().getEntries() - 1);
+            repository.save(raffleEntity.get());
+
+            // update wallet balance
+            WalletEntity walletEntity = walletRepository.findByUserId(userId);
+            if(null != walletEntity) {
+                walletEntity.setBalance(walletEntity.getBalance() + raffleEntity.get().getTokenRequired());
+                walletRepository.save(walletEntity);
+            }
+        }
+
+        // generate list
+        response = retrieveRaffleEntries(userId);
+        return response;
     }
 
     public RetrieveRaffleResponse joinRaffle(Long raffleId, Long userId) throws ParseException {
