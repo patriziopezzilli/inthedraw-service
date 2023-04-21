@@ -3,6 +3,7 @@ package com.inthedraw.inthedrawservice.entity.raffle;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -53,5 +54,8 @@ public class RaffleEntity {
 
     @Column(name = "DATE")
     private String date;
+
+    @Column(name = "RELEASE_DATE")
+    private Date releaseDate;
 
 }

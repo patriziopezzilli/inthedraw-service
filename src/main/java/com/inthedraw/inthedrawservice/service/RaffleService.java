@@ -16,10 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.inthedraw.inthedrawservice.utils.DomainConstants.*;
 
@@ -44,7 +43,7 @@ public class RaffleService {
 
     public RetrieveRaffleResponse retrieveRaffles(Long userId) {
         RetrieveRaffleResponse response = new RetrieveRaffleResponse();
-        List<RaffleEntity> raffleEntities = repository.findByStatus(RAFFLE_STATUS_OPEN);
+        List<RaffleEntity> raffleEntities = repository.findByStatusOrderByReleaseDateAsc(RAFFLE_STATUS_OPEN);
         response.setRaffles(mapper.toDTOs(raffleEntities));
 
         for (RaffleDTO r : response.getRaffles()) {
@@ -89,12 +88,18 @@ public class RaffleService {
         entity.setForcedWinnerId(request.getForcedWinnerId());
         entity.setStatus(RAFFLE_STATUS_OPEN);
         entity.setDate(getTodayDate(request.getDrawDate()));
+
+        Locale locale = new Locale("en", "US");
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT, locale);
+        Date dateToCheck = dateFormat.parse(request.getDrawDate());
+        entity.setReleaseDate(dateToCheck);
+
         entity = repository.save(entity);
         logger.info("> raffle " + entity.getId().toString() + " created successfully");
     }
 
     public RetrieveRaffleResponse cancelRaffle(Long raffleId, Long userId) throws ParseException {
-        RetrieveRaffleResponse response = new RetrieveRaffleResponse();
+        RetrieveRaffleResponse response;
 
         Optional<RaffleEntity> raffleEntity = repository.findById(raffleId);
         EntryEntity entryEntity = entryRepository.findByRaffleIdAndUserId(raffleId, userId);
