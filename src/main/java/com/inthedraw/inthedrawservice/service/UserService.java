@@ -69,25 +69,38 @@ public class UserService {
     }
 
     public LoginResponse register(CreateUserRequest request) {
-        UserEntity newUser = new UserEntity();
-        newUser.setName(request.getName());
-        newUser.setSurname(request.getSurname());
-        newUser.setEmail(request.getEmail());
-        newUser.setPassword(request.getPassword());
-        newUser.setEntries(0);
-        newUser.setEntriesWon(0);
-        newUser.setRole(USER_ROLE_CUSTOMER);
-        newUser.setStatus(USER_STATUS_ACTIVE);
-        newUser = repository.save(newUser);
-        logger.info("> user " + newUser.getId() + " created");
-
-        WalletEntity newWallet = new WalletEntity();
-        newWallet.setUserId(newUser.getId());
-        newWallet.setBalance(0);
-        walletRepository.save(newWallet);
-
         LoginResponse response = new LoginResponse();
-        response.setUserLogged(mapper.toDTO(newUser));
+
+        try {
+            // check if mail exists
+            UserEntity alreadyEx = repository.findByEmail(request.getEmail());
+            if (alreadyEx != null) {
+                response.setError(true);
+                response.setErrorMessage("Email already present in our system.");
+            }
+
+            UserEntity newUser = new UserEntity();
+            newUser.setName(request.getName());
+            newUser.setSurname(request.getSurname());
+            newUser.setEmail(request.getEmail());
+            newUser.setPassword(request.getPassword());
+            newUser.setEntries(0);
+            newUser.setEntriesWon(0);
+            newUser.setRole(USER_ROLE_CUSTOMER);
+            newUser.setStatus(USER_STATUS_ACTIVE);
+            newUser = repository.save(newUser);
+            logger.info("> user " + newUser.getId() + " created");
+
+            WalletEntity newWallet = new WalletEntity();
+            newWallet.setUserId(newUser.getId());
+            newWallet.setBalance(0);
+            walletRepository.save(newWallet);
+
+            response.setUserLogged(mapper.toDTO(newUser));
+        } catch (Exception e) {
+            response.setError(true);
+            response.setErrorMessage("Something fails during registration, please check the fields");
+        }
         return response;
     }
 
@@ -97,6 +110,9 @@ public class UserService {
         if (null != entity) {
             logger.info("> user " + entity.getEmail() + " logged");
             loginResponse.setUserLogged(mapper.toDTO(entity));
+        } else {
+            loginResponse.setError(true);
+            loginResponse.setErrorMessage("Wrong email or password.");
         }
         return loginResponse;
     }

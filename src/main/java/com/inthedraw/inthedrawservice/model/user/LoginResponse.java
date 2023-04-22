@@ -13,4 +13,7 @@ public class LoginResponse implements Serializable {
 
     private UserDTO userLogged;
 
+    private Boolean error = false;
+    private String errorMessage;
+
 }

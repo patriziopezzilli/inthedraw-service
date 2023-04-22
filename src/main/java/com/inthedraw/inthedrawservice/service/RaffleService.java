@@ -131,26 +131,34 @@ public class RaffleService {
         // create entry
         Optional<RaffleEntity> raffleEntity = repository.findById(raffleId);
         if (raffleEntity.isPresent()) {
-            // create entry
-            EntryEntity entryEntity = new EntryEntity();
-            entryEntity.setRaffleId(raffleId);
-            entryEntity.setUserId(userId);
-            entryEntity.setInfo(raffleEntity.get().getInfo());
-            entryEntity.setPhoto(raffleEntity.get().getPhoto());
-            entryEntity.setDate(getSimpleTodayDate());
-            entryEntity.setStatus(RAFFLE_STATUS_OPEN);
-            entryEntity.setTitle(raffleEntity.get().getTitle());
-            entryRepository.save(entryEntity);
+            if(raffleEntity.get().getEntries() == raffleEntity.get().getEntriesMax()) {
+                // generate list
+                response = retrieveRaffles(userId);
 
-            // update raffle
-            raffleEntity.get().setEntries(raffleEntity.get().getEntries() + 1);
-            repository.save(raffleEntity.get());
+                response.setError(true);
+                response.setErrorMessage("Max entries reached for this raffle.");
+            } else {
+                // create entry
+                EntryEntity entryEntity = new EntryEntity();
+                entryEntity.setRaffleId(raffleId);
+                entryEntity.setUserId(userId);
+                entryEntity.setInfo(raffleEntity.get().getInfo());
+                entryEntity.setPhoto(raffleEntity.get().getPhoto());
+                entryEntity.setDate(getSimpleTodayDate());
+                entryEntity.setStatus(RAFFLE_STATUS_OPEN);
+                entryEntity.setTitle(raffleEntity.get().getTitle());
+                entryRepository.save(entryEntity);
 
-            // decrease wallet
-            walletService.decreaseWallet(userId, raffleEntity.get().getTokenRequired());
+                // update raffle
+                raffleEntity.get().setEntries(raffleEntity.get().getEntries() + 1);
+                repository.save(raffleEntity.get());
 
-            // generate list
-            response = retrieveRaffles(userId);
+                // decrease wallet
+                walletService.decreaseWallet(userId, raffleEntity.get().getTokenRequired());
+
+                // generate list
+                response = retrieveRaffles(userId);
+            }
         }
         return response;
     }

@@ -13,6 +13,8 @@ import java.util.List;
 public class RetrieveRaffleResponse implements Serializable {
 
     public List<RaffleDTO> raffles;
+    private Boolean error = false;
+    private String errorMessage;
 
     public RetrieveRaffleResponse(List<RaffleDTO> raffles) {
         this.raffles = raffles;
