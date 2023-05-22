@@ -41,6 +41,18 @@ public class RaffleController {
         return raffleService.joinRaffle(id, userId);
     }
 
+    @RequestMapping(value = "in-the-draw/customer/raffle/{id}/join/fake", method = RequestMethod.PUT)
+    public void fakeJoin(@PathVariable Long id, @RequestParam Integer entries) throws ParseException {
+        logger.info("> join raffle");
+        raffleService.fakeFill(id, entries);
+    }
+
+    @RequestMapping(value = "in-the-draw/customer/raffle/{id}/draw", method = RequestMethod.PUT)
+    public void draw(@PathVariable Long id) throws ParseException {
+        logger.info("> draw raffle");
+        raffleService.draw(id);
+    }
+
     @RequestMapping(value = "in-the-draw/customer/raffle/{id}/cancel", method = RequestMethod.PUT)
     public RetrieveRaffleResponse cancel(@PathVariable Long id, @RequestParam Long userId) throws ParseException {
         logger.info("> cancel raffle");

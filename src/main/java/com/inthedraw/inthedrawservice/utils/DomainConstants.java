@@ -12,12 +12,16 @@ import java.util.Locale;
 public class DomainConstants {
     static Logger logger = LoggerFactory.getLogger(DomainConstants.class);
 
+    public static final String ORDER_STATUS_CREATED = "CREATED";
+    public static final String ORDER_STATUS_ORDERED = "ORDERED";
+    public static final String ORDER_STATUS_SHIPPED = "SHIPPED";
+    public static final String ORDER_STATUS_DELIVERED = "DELIVERED";
     public static final String RAFFLE_STATUS_OPEN = "OPEN";
-
     public static final String USER_STATUS_ACTIVE = "ACTIVE";
+    public static final String RAFFLE_STATUS_CLOSED = "CLOSED";
+    public static final String RAFFLE_STATUS_DRAWING = "DRAWING";
     public static final String USER_STATUS_BANNED = "BANNED";
     public static final String USER_STATUS_DELETED = "DELETED";
-
     public static final String USER_ROLE_CUSTOMER = "CUSTOMER";
     public static final String USER_ROLE_ADMIN = "ADMIN";
 

@@ -8,4 +8,5 @@ import java.util.List;
 public interface RaffleRepository extends JpaRepository<RaffleEntity, Long> {
 
     List<RaffleEntity> findByStatusOrderByReleaseDateAsc(String status);
+    List<RaffleEntity> findAllByOrderByReleaseDateAsc();
 }

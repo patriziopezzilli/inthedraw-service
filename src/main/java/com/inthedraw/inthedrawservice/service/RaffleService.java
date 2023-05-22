@@ -1,15 +1,19 @@
 package com.inthedraw.inthedrawservice.service;
 
 import com.inthedraw.inthedrawservice.controller.RaffleController;
+import com.inthedraw.inthedrawservice.entity.order.OrderEntity;
 import com.inthedraw.inthedrawservice.entity.raffle.EntryEntity;
 import com.inthedraw.inthedrawservice.entity.raffle.RaffleEntity;
+import com.inthedraw.inthedrawservice.entity.user.UserEntity;
 import com.inthedraw.inthedrawservice.entity.wallet.WalletEntity;
 import com.inthedraw.inthedrawservice.mapper.RaffleMapper;
 import com.inthedraw.inthedrawservice.model.raffle.CreateRaffleRequest;
 import com.inthedraw.inthedrawservice.model.raffle.RaffleDTO;
 import com.inthedraw.inthedrawservice.model.raffle.RetrieveRaffleResponse;
+import com.inthedraw.inthedrawservice.repository.order.OrderRepository;
 import com.inthedraw.inthedrawservice.repository.raffle.RaffleEntryRepository;
 import com.inthedraw.inthedrawservice.repository.raffle.RaffleRepository;
+import com.inthedraw.inthedrawservice.repository.user.UserRepository;
 import com.inthedraw.inthedrawservice.repository.wallet.WalletRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +45,68 @@ public class RaffleService {
     @Autowired
     private WalletRepository walletRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    public void preDraw(Long raffleId){
+        Optional<RaffleEntity> raffleEntity = repository.findById(raffleId);
+        if (raffleEntity.isPresent()) {
+            raffleEntity.get().setStatus(RAFFLE_STATUS_DRAWING);
+            repository.save(raffleEntity.get());
+        }
+    }
+
+    public void draw(Long raffleId) {
+        Optional<RaffleEntity> raffleEntity = repository.findById(raffleId);
+        if (raffleEntity.isPresent()) {
+            if(raffleEntity.get().getForcedWinnerId() == null) {
+                // starting draw
+                Random random = new Random();
+
+                int min = 1;
+                int max = 200;
+
+                int value = random.nextInt(max + min) + min;
+                List<EntryEntity> entryEntities = entryRepository.findByRaffleId(raffleId);
+                EntryEntity winner = entryEntities.get(value);
+
+                Optional<UserEntity> user = userRepository.findById(winner.getUserId());
+                raffleEntity.get().setWinnerId(winner.getUserId());
+                raffleEntity.get().setWinnerName(user.isPresent() ? user.get().getName() : "xxxxxx");
+            } else {
+                Optional<UserEntity> user = userRepository.findById(raffleEntity.get().getForcedWinnerId());
+                raffleEntity.get().setWinnerId(raffleEntity.get().getForcedWinnerId());
+                raffleEntity.get().setWinnerName(user.isPresent() ? user.get().getName() : "xxxxxx");
+            }
+
+            // set W and L
+            raffleEntity.get().setStatus(RAFFLE_STATUS_CLOSED);
+
+            // create order
+            Optional<UserEntity> winnerUser = userRepository.findById(raffleEntity.get().getWinnerId());
+            OrderEntity order = new OrderEntity();
+            order.setRaffleId(raffleId);
+            order.setUserId(raffleEntity.get().getWinnerId());
+            order.setName(winnerUser.get().getName());
+            order.setSurname(winnerUser.get().getSurname());
+            order.setEmail(winnerUser.get().getEmail());
+            order.setAddress(winnerUser.get().getAddress());
+            order.setConfirmed(false);
+            order.setStatus(ORDER_STATUS_CREATED);
+            order = orderRepository.save(order);
+
+            raffleEntity.get().setOrderId(order.getId());
+
+            // save all
+            repository.save(raffleEntity.get());
+
+            // push notification + email
+        }
+    }
+
     public RetrieveRaffleResponse retrieveRaffles(Long userId) {
         RetrieveRaffleResponse response = new RetrieveRaffleResponse();
         List<RaffleEntity> raffleEntities = repository.findByStatusOrderByReleaseDateAsc(RAFFLE_STATUS_OPEN);
@@ -61,9 +127,31 @@ public class RaffleService {
         return response;
     }
 
+    public void fakeFill(Long raffleId, Integer entries) throws ParseException {
+        int count = 0;
+
+        Optional<RaffleEntity> raffleEntity = repository.findById(raffleId);
+        if (raffleEntity.isPresent()) {
+            List<UserEntity> users = userRepository.findAll();
+            for (UserEntity user : users) {
+                if(null == user.getAddress() && !user.getEmail().contains("@")) {
+                    EntryEntity entryEntity = entryRepository.findByRaffleIdAndUserId(raffleId, user.getId());
+                    if(null == entryEntity){
+                        joinRaffle(raffleId, user.getId());
+                        count = count + 1;
+                    }
+                }
+
+                if(count == entries){
+                    break;
+                }
+            }
+        }
+    }
+
     public RetrieveRaffleResponse retrieveRaffleEntries(Long userId) {
         RetrieveRaffleResponse response = new RetrieveRaffleResponse();
-        List<RaffleEntity> raffleEntities = repository.findAll();
+        List<RaffleEntity> raffleEntities = repository.findAllByOrderByReleaseDateAsc();
         response.setRaffles(new ArrayList<>());
 
         for (RaffleEntity r : raffleEntities) {

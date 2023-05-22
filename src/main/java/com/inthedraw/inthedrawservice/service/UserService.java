@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.inthedraw.inthedrawservice.utils.DomainConstants.USER_ROLE_CUSTOMER;
 import static com.inthedraw.inthedrawservice.utils.DomainConstants.USER_STATUS_ACTIVE;
@@ -66,6 +67,18 @@ public class UserService {
             userUpdated.ifPresent(userEntity -> response.setUserLogged(mapper.toDTO(userEntity)));
         }
         return response;
+    }
+
+    public void createMockUsers() {
+        for (int i = 0; i < 300; i++) {
+            CreateUserRequest newRequest = new CreateUserRequest();
+            newRequest.setEmail(UUID.randomUUID().toString());
+            newRequest.setName(UUID.randomUUID().toString());
+            newRequest.setSurname(UUID.randomUUID().toString());
+            newRequest.setPassword(UUID.randomUUID().toString());
+
+            register(newRequest);
+        }
     }
 
     public LoginResponse register(CreateUserRequest request) {

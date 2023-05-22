@@ -38,16 +38,16 @@ public class RaffleEntity {
     private Integer tokenRequired;
 
     @Column(name = "WINNER_ID")
-    private Integer winnerId;
+    private Long winnerId;
 
     @Column(name = "WINNER_NAME")
     private String winnerName;
 
     @Column(name = "FORCED_WINNER_ID")
-    private Integer forcedWinnerId;
+    private Long forcedWinnerId;
 
     @Column(name = "ORDER_ID")
-    private Integer orderId;
+    private Long orderId;
 
     @Column(name = "STATUS")
     private String status;

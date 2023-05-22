@@ -28,6 +28,12 @@ public class UserController {
         return userService.register(request);
     }
 
+    @RequestMapping(value = "in-the-draw/customer/user/register/mock", method = RequestMethod.POST)
+    public void registerMockUsers() throws ParseException {
+        logger.info("> register user performing");
+        userService.createMockUsers();
+    }
+
     @RequestMapping(value = "in-the-draw/customer/user/{id}", method = RequestMethod.PUT)
     public LoginResponse updateUser(@PathVariable Integer id, @RequestBody UpdateUserRequest request) throws ParseException {
         logger.info("> update user performing");

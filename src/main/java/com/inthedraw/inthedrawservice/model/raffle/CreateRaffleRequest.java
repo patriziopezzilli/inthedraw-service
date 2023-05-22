@@ -18,6 +18,6 @@ public class CreateRaffleRequest implements Serializable {
     private Integer entries;
     private Integer entriesMax;
     private Integer tokenRequired;
-    private Integer forcedWinnerId;
+    private Long forcedWinnerId;
     private String drawDate;
 }
