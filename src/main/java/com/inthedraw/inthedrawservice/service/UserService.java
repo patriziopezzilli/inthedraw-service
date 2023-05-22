@@ -98,6 +98,7 @@ public class UserService {
             newUser.setEmail(request.getEmail());
             newUser.setPassword(request.getPassword());
             newUser.setEntries(0);
+            newUser.setSize(4);
             newUser.setEntriesWon(0);
             newUser.setRole(USER_ROLE_CUSTOMER);
             newUser.setStatus(USER_STATUS_ACTIVE);

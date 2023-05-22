@@ -13,7 +13,7 @@ public class UpdateUserRequest implements Serializable {
 
     private String name;
     private String surname;
-    private String size;
+    private Integer size;
     private String photo;
     private String address;
     private String city;

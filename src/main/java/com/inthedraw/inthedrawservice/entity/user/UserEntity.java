@@ -31,7 +31,7 @@ public class UserEntity {
     private String password;
 
     @Column(name = "SIZE")
-    private String size;
+    private Integer size;
 
     @Column(name = "PHOTO")
     private String photo;
